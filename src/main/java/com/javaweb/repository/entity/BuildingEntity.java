@@ -42,8 +42,25 @@ public class BuildingEntity {
 	
 	@Column(name = "level")
 	private String level;
-//	private Long floorArea;
+	
+	public Long getNumberOfBasement() {
+		return numberOfBasement;
+	}
+	public void setNumberOfBasement(Long numberOfBasement) {
+		this.numberOfBasement = numberOfBasement;
+	}
+	@Column(name = "floorarea")
+	private Long floorArea;
 //	private String emptyArea;
+	
+	@Column(name = "numberofbasement")
+	private Long numberOfBasement;
+	
+	@Column(name = "brokeragefee")
+	private Long brokerageFee;
+	
+	@Column(name = "servicefee")
+	private String serviceFee;
 	
 	public String getDirection() {
 		return direction;
@@ -73,8 +90,6 @@ public class BuildingEntity {
 	public void setDistrict(DistrictEntity district) {
 		this.district = district;
 	}
-	//	private String serviceFee;
-//	private Long brokerageFee;
 	
 	public Long getId() {
 		return id;
@@ -100,12 +115,12 @@ public class BuildingEntity {
 	public void setManagerPhoneNumber(String managerPhoneNumber) {
 		this.managerPhoneNumber = managerPhoneNumber;
 	}
-//	public Long getFloorArea() {
-//		return floorArea;
-//	}
-//	public void setFloorArea(Long floorArea) {
-//		this.floorArea = floorArea;
-//	}
+	public Long getFloorArea() {
+		return floorArea;
+	}
+	public void setFloorArea(Long floorArea) {
+		this.floorArea = floorArea;
+	}
 //	public String getEmptyArea() {
 //		return emptyArea;
 //	}
@@ -118,18 +133,18 @@ public class BuildingEntity {
 	public void setRentPrice(Long rentPrice) {
 		this.rentPrice = rentPrice;
 	}
-//	public String getServiceFee() {
-//		return serviceFee;
-//	}
-//	public void setServiceFee(String serviceFee) {
-//		this.serviceFee = serviceFee;
-//	}
-//	public Long getBrokerageFee() {
-//		return brokerageFee;
-//	}
-//	public void setBrokerageFee(Long brokerageFee) {
-//		this.brokerageFee = brokerageFee;
-//	}
+	public String getServiceFee() {
+		return serviceFee;
+	}
+	public void setServiceFee(String serviceFee) {
+		this.serviceFee = serviceFee;
+	}
+	public Long getBrokerageFee() {
+		return brokerageFee;
+	}
+	public void setBrokerageFee(Long brokerageFee) {
+		this.brokerageFee = brokerageFee;
+	}
 	public String getName() {
 		return name;
 	}

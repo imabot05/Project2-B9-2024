@@ -52,7 +52,7 @@ public class BuildingAPI {
 	private EntityManager entityManager;
 	
 	@GetMapping(value="/api/building")
-	public List<BuildingDTO> getBuilding(@RequestParam Map<String, Object> params,
+	public List<BuildingDTO> getBuilding(@RequestParam(required = false) Map<String, Object> params,
 				@RequestParam(name="typeCode", required=false) List<String> typeCode
 			){
 		List<BuildingDTO> result = buildingService.findAll(params, typeCode);
@@ -98,7 +98,7 @@ public class BuildingAPI {
 		DistrictEntity districtEntity = new DistrictEntity();
 		districtEntity.setId(buildingRequestDTO.getDistrictId());
 		buildingEntity.setDistrict(districtEntity);
-		entityManager.persist(districtEntity);
+		entityManager.merge(districtEntity);
 		System.out.println("OKE");
 	}
 	@PutMapping(value="/api/building/")

@@ -3,6 +3,7 @@ package com.javaweb.repository.custom.impl;
 import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -27,6 +28,8 @@ import com.javaweb.model.BuildingDTO;
 import com.javaweb.repository.BuildingRepository;
 import com.javaweb.repository.custom.BuildingRepositoryCustom;
 import com.javaweb.repository.entity.BuildingEntity;
+import com.javaweb.repository.entity.DistrictEntity;
+import com.javaweb.utils.ConnectionJDBCUtil;
 import com.javaweb.utils.NumberUtil;
 import com.javaweb.utils.StringUtil;
 
@@ -113,6 +116,14 @@ public class BuildingRepositoryImpl implements BuildingRepositoryCustom{
 			for (Field item: fields) {
 				item.setAccessible(true);
 				String fieldName = item.getName();
+				if (fieldName.equals("districtId")) {
+					Object value = item.get(buildingSearchBuilder);
+					if (value != null) {
+						if (item.getName().equals("districtid")) {
+							where.append(" AND b.districtid = " + value);
+						}
+					}
+				}
 				if (!fieldName.equals("staffId") && !fieldName.equals("typeCode") && !fieldName.startsWith("area") && !fieldName.startsWith("rentPrice")) {
 					Object value = item.get(buildingSearchBuilder);
 					if (value != null) {
@@ -138,31 +149,62 @@ public class BuildingRepositoryImpl implements BuildingRepositoryCustom{
 			StringBuilder where = new StringBuilder("WHERE 1 = 1 ");
 			queryNormal(buildingSearchBuilder, where);
 			querySpecial(buildingSearchBuilder, where);
-			where.append("GROUP BY b.id; ");
+			where.append(" GROUP BY b.id; ");
 			sql.append(where);
-			Query query = entityManager.createNativeQuery(sql.toString(), BuildingEntity.class);
-			System.out.println(sql.toString());
-			return query.getResultList();
-//			ResultSet rs = stmt.executeQuery(sql.toString());
-//			while (rs.next()) {
-//				BuildingEntity buildingEntity = new BuildingEntity();
-//				buildingEntity.setId(rs.getLong("b.id"));
-//				buildingEntity.setName(rs.getString("b.name"));
-//				buildingEntity.setWard(rs.getString("b.ward"));
-////				buildingEntity.setDistrictId(rs.getLong("b.districtId"));
-//				buildingEntity.setStreet(rs.getString("b.street"));
-////				buildingEntity.setFloorArea(rs.getLong("b.floorarea"));
-//				buildingEntity.setRentPrice(rs.getLong("b.rentprice"));
-////				buildingEntity.setServiceFee(rs.getString("b.serviceFee"));
-////				buildingEntity.setBrokerageFee(rs.getLong("b.brokerageFee"));
-//				buildingEntity.setManagerName(rs.getString("b.managerName"));
-//				buildingEntity.setManagerPhoneNumber(rs.getString("b.managerphonenumber"));
-//				result.add(buildingEntity);
-//			}
+//			Query query = entityManager.createNativeQuery(sql.toString(), BuildingEntity.class);
+//			System.out.println(sql.toString());
+//			return query.getResultList();
+			Connection conn = ConnectionJDBCUtil.getConnection();
+			try {
+				Statement stmt = conn.createStatement();
+				ResultSet rs = stmt.executeQuery(sql.toString());
+				System.out.println(sql.toString());
+				while (rs.next()) {
+					BuildingEntity buildingEntity = new BuildingEntity();
+					buildingEntity.setId(rs.getLong("b.id"));
+					buildingEntity.setName(rs.getString("b.name"));
+					buildingEntity.setWard(rs.getString("b.ward"));
+					buildingEntity.setNumberOfBasement(rs.getLong("b.numberOfBasement"));
+					Long districtId = rs.getLong("b.districtid");
+				    DistrictEntity districtEntity = findDistrictById(districtId);
+				    buildingEntity.setDistrict(districtEntity);
+					buildingEntity.setStreet(rs.getString("b.street"));
+					buildingEntity.setFloorArea(rs.getLong("b.floorarea"));
+					buildingEntity.setRentPrice(rs.getLong("b.rentprice"));
+					buildingEntity.setServiceFee(rs.getString("b.serviceFee"));
+					buildingEntity.setBrokerageFee(rs.getLong("b.brokerageFee"));
+					buildingEntity.setManagerName(rs.getString("b.managerName"));
+					buildingEntity.setManagerPhoneNumber(rs.getString("b.managerphonenumber"));
+					result.add(buildingEntity);
+				}
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			}
+			return result;
 	}
 	public void DeleteById(Long id) {
 		// TODO Auto-generated method stub
 		
 	}
+	
+	public DistrictEntity findDistrictById(Long id) {
+	    String sql = "SELECT * FROM district WHERE id = ?";
+	    try (Connection conn = ConnectionJDBCUtil.getConnection();
+	        PreparedStatement stmt = conn.prepareStatement(sql)) {
+	        stmt.setLong(1, id);
+	        ResultSet rs = stmt.executeQuery();
+	        if (rs.next()) {
+	            DistrictEntity district = new DistrictEntity();
+	            district.setId(rs.getLong("id"));
+	            district.setCode(rs.getString("code"));
+	            district.setName(rs.getString("name"));
+	            return district;
+	        }
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
+	    return null;
+	}
+
 	
 }
