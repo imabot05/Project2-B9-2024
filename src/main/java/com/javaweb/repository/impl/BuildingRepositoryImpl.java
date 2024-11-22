@@ -11,6 +11,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
+
+import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -25,12 +30,12 @@ import com.javaweb.utils.NumberUtil;
 
 
 @Repository
-public class BuildingRepositoryImpl implements BuildingRepository {
 
-    static final String DB_URL = "jdbc:mysql://localhost:3306/estatebasic";
-    static final String USER = "root";
-    static final String PASS = "";
-    
+public class BuildingRepositoryImpl implements BuildingRepository {
+	
+	@PersistenceContext
+	private EntityManager entityManager;
+	
     private void sqlJoin(BuildingSearchBuilder builder, StringBuilder join) {
     	Long staffId = builder.getStaffId();
     	if (DataUtil.checkData(staffId)) {
@@ -49,17 +54,6 @@ public class BuildingRepositoryImpl implements BuildingRepository {
     }
     
     private void sqlWhereNormal(BuildingSearchBuilder builder, StringBuilder where) {
-//    	for (Map.Entry<String, Object> it: params.entrySet()) {
-//    		String key = it.getKey();
-//    		if (!key.equals("staffId") && !key.equals("typeCode") && !key.startsWith("rentArea") && !key.startsWith("rentPrice")){
-//    			String value = it.getValue().toString();
-//    			if (!NumberUtil.checkNumber(key)) {
-//    				where.append(" AND b." + key + " LIKE '%" + value + "%'");
-//    			} else {
-//    				where.append(" AND b." + key + " = " + value);
-//    			}
-//    		}
-//    	}
     	try {
     		Field[] fields = BuildingSearchBuilder.class.getDeclaredFields();
     		for (Field it: fields) {
@@ -118,36 +112,9 @@ public class BuildingRepositoryImpl implements BuildingRepository {
         StringBuilder where = new StringBuilder(" WHERE 1 = 1 ");
         sqlWhereNormal(builder, where);
         sqlWhereSpecial(builder, where);
-        where.append(" GROUP by b.id");
-        sql.append(where);
-        
-        List<BuildingEntity> results = new ArrayList<>();
-        try (Connection conn = ConnectionUtil.getConnection();
-        		Statement stm = conn.createStatement();
-        		ResultSet rs = stm.executeQuery(sql.toString());
-        		) {
-            System.out.println(sql);
-            while (rs.next()) {
-            	BuildingEntity buildingEntity = new BuildingEntity();
-            	buildingEntity.setId(rs.getLong("b.id"));
-            	buildingEntity.setName(rs.getString("b.name"));
-            	buildingEntity.setDistrictId(rs.getLong("b.districtid"));
-            	buildingEntity.setWard(rs.getString("b.ward"));
-            	buildingEntity.setStreet(rs.getString("b.street"));
-            	buildingEntity.setDirection(rs.getString("b.direction"));
-            	buildingEntity.setNumberOfBasement(rs.getLong("b.numberofbasement"));
-            	buildingEntity.setFloorArea(rs.getLong("b.floorarea"));
-            	buildingEntity.setRentPrice(rs.getLong("b.rentprice"));
-            	buildingEntity.setManagerName(rs.getString("b.managername"));
-            	buildingEntity.setManagerPhoneNumber(rs.getString("b.managerphonenumber"));
-            	buildingEntity.setBrokerageFee(rs.getLong("b.brokeragefee"));
-            	buildingEntity.setServiceFee(rs.getString("b.servicefee"));
-            	results.add(buildingEntity);
-            }
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-        return results;
+        sql.append(where).append(" GROUP by b.id");
+        Query query = entityManager.createNativeQuery(sql.toString(), BuildingEntity.class);
+        return query.getResultList();
     }
 
 

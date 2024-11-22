@@ -9,12 +9,18 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.transaction.Transactional;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -27,20 +33,17 @@ import com.javaweb.dto.ErrorDetailDTO;
 import com.javaweb.dto.response.BuildingResponseDTO;
 import com.javaweb.repository.BuildingRepository;
 import com.javaweb.repository.entity.BuildingEntity;
+import com.javaweb.repository.entity.DistrictEntity;
 import com.javaweb.service.BuildingService;
 
 @RestController
+//@PropertySource("classpath:application.properties")
 public class BuildingAPI {
-//	@GetMapping("/api/building")
-//	private void getBuildings(@RequestParam(name = "name",  required = false) String name,
-//			@RequestParam(name = "ward", required = false) String ward,
-//			@RequestParam(name = "districtid", required = false) Long districtId,
-//			@RequestParam(name = "typeCode", required = false) List<String> typeCode
-//			) {
-//		System.out.println("OKAY " + name + " " + ward );
-//	}
 	@Autowired
 	private BuildingService buildingService; 
+	
+	@PersistenceContext
+	private EntityManager entityManager;
 	
 	@GetMapping("/api/buildings")
     public List<BuildingResponseDTO> getBuildings(
@@ -51,18 +54,33 @@ public class BuildingAPI {
         return buildingService.findAll(params, typeCodes);
     }
 	
-//	@PostMapping("/api/building")
-//	private Object createBuilding(
-//			@RequestBody BuildingDTO building
-//			) {
-//		validate(building);
-//		return building;
-//	}
+	private void validate(BuildingDTO building) {
+		if (building.getName() == null || building.getName().equals("") || building.getNumberOfBasement() == null) {
+			throw new InvalidDataException("Name or number of basements can't be empty");
+		}
+	}
 	
+	@PostMapping("/api/buildings")
+	public Object createBuilding(@RequestBody BuildingDTO building) {
+		validate(building);
+		return buildingService.createBuilding(building);
+	}
 	
+	@PutMapping("/api/buildings")
+	public Object updateBuilding(@RequestBody BuildingDTO building) {
+		if (building.getId() != null) {
+			validate(building);
+			buildingService.updateBuilding(building);
+		} else {
+			
+		}
+		return null;
+	}
 	
-	@DeleteMapping("/api/building/{ids}")
-	private void deleteBuilding(@PathVariable Long[] ids) {
-		System.out.println(ids);
+	@DeleteMapping("/api/buildings/{ids}")
+	private void deleteBuilding(@PathVariable List<Long> ids) {
+		if (ids.size() != 0) {
+			buildingService.deleteById(ids);
+		} 
 	}
 }
