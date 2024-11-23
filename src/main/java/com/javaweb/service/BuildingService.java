@@ -9,7 +9,6 @@ import com.javaweb.repository.entity.BuildingEntity;
 
 public interface BuildingService {
 	List<BuildingResponseDTO> findAll(Map<String, Object> params, List<String> typeCodes);
-	BuildingEntity createBuilding(BuildingDTO buildingDTO);
-	BuildingEntity updateBuilding(BuildingDTO buildingDTO);
+	BuildingEntity createOrUpdateBuilding(BuildingDTO buildingDTO);
 	void deleteById(List<Long> ids);
 }

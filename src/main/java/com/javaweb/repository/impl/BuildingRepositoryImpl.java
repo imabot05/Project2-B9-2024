@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.javaweb.builder.BuildingSearchBuilder;
 import com.javaweb.dto.BuildingDTO;
 import com.javaweb.repository.BuildingRepository;
+import com.javaweb.repository.custom.BuildingRepositoryCustom;
 import com.javaweb.repository.entity.BuildingEntity;
 import com.javaweb.utils.ConnectionUtil;
 import com.javaweb.utils.DataUtil;
@@ -31,7 +32,7 @@ import com.javaweb.utils.NumberUtil;
 
 @Repository
 
-public class BuildingRepositoryImpl implements BuildingRepository {
+public class BuildingRepositoryImpl implements BuildingRepositoryCustom {
 	
 	@PersistenceContext
 	private EntityManager entityManager;
@@ -116,10 +117,10 @@ public class BuildingRepositoryImpl implements BuildingRepository {
         Query query = entityManager.createNativeQuery(sql.toString(), BuildingEntity.class);
         return query.getResultList();
     }
-
-
-    @Override
-    public Object delete(List<Long> ids) {
-        return null;
-    }
+//
+//
+//    @Override
+//    public Object delete(List<Long> ids) {
+//        return null;
+//    }
 }

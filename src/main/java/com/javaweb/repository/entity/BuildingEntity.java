@@ -58,7 +58,7 @@ public class BuildingEntity {
 	@JoinColumn(name = "districtid")
 	private DistrictEntity district;
 	
-	@OneToMany(mappedBy = "buildingEntity", fetch = FetchType.LAZY)
+	@OneToMany(mappedBy = "building", fetch = FetchType.LAZY)
 	private List<RentAreaEntity> rentareas = new ArrayList<>();
 	
 	public List<RentAreaEntity> getRentareas() {

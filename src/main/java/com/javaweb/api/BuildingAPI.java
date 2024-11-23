@@ -63,18 +63,7 @@ public class BuildingAPI {
 	@PostMapping("/api/buildings")
 	public Object createBuilding(@RequestBody BuildingDTO building) {
 		validate(building);
-		return buildingService.createBuilding(building);
-	}
-	
-	@PutMapping("/api/buildings")
-	public Object updateBuilding(@RequestBody BuildingDTO building) {
-		if (building.getId() != null) {
-			validate(building);
-			buildingService.updateBuilding(building);
-		} else {
-			
-		}
-		return null;
+		return buildingService.createOrUpdateBuilding(building);
 	}
 	
 	@DeleteMapping("/api/buildings/{ids}")

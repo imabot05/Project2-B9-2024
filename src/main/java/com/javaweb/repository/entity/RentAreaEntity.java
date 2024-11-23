@@ -22,7 +22,7 @@ public class RentAreaEntity {
 	
 	@ManyToOne
 	@JoinColumn(name = "buildingid")
-	private BuildingEntity buildingEntity;
+	private BuildingEntity building;
 	
 	public Long getId() {
 		return id;
@@ -36,11 +36,11 @@ public class RentAreaEntity {
 	public void setValue(Long value) {
 		this.value = value;
 	}
-	public BuildingEntity getBuildingEntity() {
-		return buildingEntity;
+	public BuildingEntity getBuilding() {
+		return building;
 	}
-	public void setBuildingEntity(BuildingEntity buildingEntity) {
-		this.buildingEntity = buildingEntity;
+	public void setBuilding(BuildingEntity building) {
+		this.building = building;
 	}
 	
 }

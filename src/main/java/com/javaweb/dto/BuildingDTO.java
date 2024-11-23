@@ -13,6 +13,7 @@ public class BuildingDTO {
 	private String street;
 	private Long numberOfBasement;
 	private String managerName;
+	private String managerPhoneNumber;
 	private Long rentPrice;
 	
 	public Long getId() {
@@ -62,5 +63,11 @@ public class BuildingDTO {
 	}
 	public void setRentPrice(Long rentPrice) {
 		this.rentPrice = rentPrice;
+	}
+	public String getManagerPhoneNumber() {
+		return managerPhoneNumber;
+	}
+	public void setManagerPhoneNumber(String managerPhoneNumber) {
+		this.managerPhoneNumber = managerPhoneNumber;
 	}	
 }
